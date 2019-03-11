@@ -79,8 +79,9 @@ fakeroot. However, to install your packages you have to be root.
 
 *** WINDOWS INSTALLER ***
 
-	Install CygWin and include at least the ghostscript, zip and libgcc packages.
+	Install CygWin and include at least the ghostscript, zip, libgcc and dos2unix packages.
 
+	Should be fixed
 	In case you are using a 64-bit version of CygWin: rename cyggcc_s-1.dll to
 	cyggcc_s-seh-1.dll in Makefile and win/setup.iss.
 	
@@ -91,6 +92,10 @@ fakeroot. However, to install your packages you have to be root.
 	$ cd /cygdrive/yourdrive/your_ctnlm_src_location
 
 	$ ./configure
+    
+	or, if the file has dos line endings
+    $ bash <(dos2unix < configure)
+    
 	$ make
 
 	Prepare all binaries, manuals, config templates, Start Menu links and InnoSetup
