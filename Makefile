@@ -2,17 +2,25 @@
 # You can tweak these three variables to make things install where you
 # like, but do not touch more unless you know what you are doing. ;)
 #
-DESTDIR    	:=
+
+DESTDIR		:= ""
+
+ifeq ($(shell uname -s),Darwin)
+SYSCONFDIR 	:= $(DESTDIR)/usr/local/etc
+BINDIR	:= $(DESTDIR)/usr/local/bin
+MANDIR  := $(DESTDIR)/usr/local/share/man
+else
 SYSCONFDIR 	:= $(DESTDIR)/etc
-BINDIR     	:= $(DESTDIR)/usr/sbin
-MANDIR     	:= $(DESTDIR)/usr/share/man
+BINDIR := $(DESTDIR)/usr/sbin
+MANDIR := $(DESTDIR)/usr/share/man
+endif
 
 #
 # Careful now...
 # __BSD_VISIBLE is for FreeBSD AF_* constants
 # _ALL_SOURCE is for AIX 5.3 LOG_PERROR constant
 #
-NAME		:= cntlm
+NAME	:= cntlm
 CC		:= gcc
 VER		:= $(shell cat VERSION)
 OS		:= $(shell uname -s)
@@ -62,10 +70,10 @@ install: $(NAME)
 		install -M 644 -f $(MANDIR)/man1 doc/$(NAME).1; \
 		install -M 600 -c $(SYSCONFDIR) doc/$(NAME).conf; \
 	elif [ "`uname -s`" = "Darwin" ]; then \
-		install -d -m 755 -s $(NAME) $(BINDIR)/$(NAME); \
-		install -d -m 644 doc/$(NAME).1 $(MANDIR)/man1/$(NAME).1; \
+		install -m 755 -s $(NAME) $(BINDIR)/$(NAME); \
+		install -m 644 doc/$(NAME).1 $(MANDIR)/man1/$(NAME).1; \
 		[ -f $(SYSCONFDIR)/$(NAME).conf -o -z "$(SYSCONFDIR)" ] \
-			|| install -d -m 600 doc/$(NAME).conf $(SYSCONFDIR)/$(NAME).conf; \
+			|| install -m 600 doc/$(NAME).conf $(SYSCONFDIR)/$(NAME).conf; \
 	else \
 		install -D -m 755 -s $(NAME) $(BINDIR)/$(NAME); \
 		install -D -m 644 doc/$(NAME).1 $(MANDIR)/man1/$(NAME).1; \
