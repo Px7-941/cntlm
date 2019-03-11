@@ -24,9 +24,15 @@ NAME	:= cntlm
 CC		:= gcc
 VER		:= $(shell cat VERSION)
 OS		:= $(shell uname -s)
+CYGARCH := $(shell uname -a)
 OSLDFLAGS	:= $(shell [ $(OS) = "SunOS" ] && echo "-lrt -lsocket -lnsl")
 LDFLAGS		:= -lpthread $(OSLDFLAGS)
-CYGWIN_REQS	:= cygwin1.dll cyggcc_s-1.dll cygstdc++-6.dll cygrunsrv.exe 
+
+ifeq ($(findstring x86_64,$(CYGARCH)),)
+	CYGWIN_REQS	:= cygwin1.dll cyggcc_s-1.dll cygstdc++-6.dll cygrunsrv.exe 
+else
+	CYGWIN_REQS	:= cygwin1.dll cyggcc_s-seh-1.dll cygstdc++-6.dll cygrunsrv.exe
+endif
 
 ifeq ($(DEBUG),1)
 	CFLAGS	+= -g  -std=c99 -Wall -pedantic -D__BSD_VISIBLE -D_ALL_SOURCE -D_XOPEN_SOURCE=600 -D_POSIX_C_SOURCE=200112 -D_ISOC99_SOURCE -D_REENTRANT -D_BSD_SOURCE -DVERSION=\"'$(VER)'\"
@@ -41,6 +47,7 @@ else
 endif
 
 $(NAME): configure-stamp $(OBJS)
+	@echo $(CYGARCH)
 	@echo "Linking $@"
 	@$(CC) $(CFLAGS) -o $@ $(OBJS) $(LDFLAGS)
 
@@ -158,7 +165,11 @@ ifeq ($(findstring CYGWIN,$(OS)),)
 	@echo
 	@exit 1
 endif
-	@sed "s/\$$VERSION/$(VER)/g" $^ > $@
+ifeq ($(findstring x86_64,$(CYGARCH)),)
+	@sed "s/\$$VERSION/$(VER)/g;" $^ > $@
+else
+	@sed "s/\$$VERSION/$(VER)/g; s/cyggcc_s-1/cyggcc_s-seh-1/g" $^ > $@
+endif
 
 uninstall:
 	rm -f $(BINDIR)/$(NAME) $(MANDIR)/man1/$(NAME).1 2>/dev/null || true

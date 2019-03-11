@@ -6,3 +6,6 @@ config/socklen_t
 config/strdup
 config/endian
 configure-stamp
+win/*
+*.exe
+*.zip
