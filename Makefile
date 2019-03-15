@@ -47,7 +47,7 @@ else
 endif
 
 $(NAME): configure-stamp $(OBJS)
-	@echo $(CYGARCH)
+	@echo "$(CYGARCH)"
 	@echo "Linking $@"
 	@$(CC) $(CFLAGS) -o $@ $(OBJS) $(LDFLAGS)
 
@@ -156,7 +156,8 @@ win/LICENSE.txt: COPYRIGHT LICENSE
 win/cntlm_manual.pdf: doc/cntlm.1 
 	@echo Win32: generating PDF manual
 	@rm -f $@
-	@groff -t -e -mandoc -Tps doc/cntlm.1 | ps2pdf - $@
+	@dos2unix -k -n doc/cntlm.1 win/cntlm.1
+	@groff -t -e -mandoc -Tps win/cntlm.1 | ps2pdf - $@
 
 win/setup.iss: win/setup.iss.in
 ifeq ($(findstring CYGWIN,$(OS)),)
@@ -177,7 +178,7 @@ uninstall:
 clean:
 	@rm -f config/endian config/gethostname config/strdup config/socklen_t config/*.exe
 	@rm -f *.o cntlm cntlm.exe configure-stamp build-stamp config/config.h
-	rm -f $(patsubst %, win/%, $(CYGWIN_REQS) cntlm.exe cntlm.ini LICENSE.txt setup.iss cntlm_manual.pdf)
+	@rm -f $(patsubst %, win/%, $(CYGWIN_REQS) cntlm.exe cntlm.ini LICENSE.txt setup.iss cntlm_manual.pdf)
 	@if [ -h Makefile ]; then rm -f Makefile; mv Makefile.gcc Makefile; fi
 
 distclean: clean
